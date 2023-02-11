@@ -91,12 +91,14 @@ public class OrderRepository {
 
     public String deletePartnerById (String partnerId) {
         partnerMap.remove(partnerId);
-        if (deliveryPartnerArrayListHashMap.containsKey(partnerId)) deliveryPartnerArrayListHashMap.remove(partnerId);
-        List<String> orderList = new ArrayList<>();
-        for (String order: orderDeliveryPartnerHashMap.keySet()) {
-            if (orderDeliveryPartnerHashMap.get(order) == partnerId) orderList.add(order);
+        if (deliveryPartnerArrayListHashMap.containsKey(partnerId)) {
+            deliveryPartnerArrayListHashMap.remove(partnerId);
+            List<String> orderList = new ArrayList<>();
+            for (String order: orderDeliveryPartnerHashMap.keySet()) {
+                if (orderDeliveryPartnerHashMap.get(order).equals(partnerId)) orderList.add(order);
+            }
+            for (String order: orderList) orderDeliveryPartnerHashMap.remove(order);
         }
-        for (String order: orderList) orderDeliveryPartnerHashMap.remove(order);
         return " removed successfully";
     }
 
