@@ -8,10 +8,18 @@ import java.util.List;
 
 @Repository
 public class OrderRepository {
-    private HashMap<String, Order> orderMap = new HashMap<>();
-    private HashMap<String, DeliveryPartner> partnerMap = new HashMap<>();
-    private HashMap<String, String> orderDeliveryPartnerHashMap = new HashMap<>();
-    private HashMap<String, List<String>> deliveryPartnerArrayListHashMap = new HashMap<>();
+    private HashMap<String, Order> orderMap;
+    private HashMap<String, DeliveryPartner> partnerMap;
+    private HashMap<String, String> orderDeliveryPartnerHashMap;
+    private HashMap<String, List<String>> deliveryPartnerArrayListHashMap;
+
+    public OrderRepository() {
+        this.orderMap = new HashMap<>();
+        this.partnerMap = new HashMap<>();
+        this.orderDeliveryPartnerHashMap = new HashMap<>();
+        this.deliveryPartnerArrayListHashMap = new HashMap<>();
+    }
+
     public String addOrder(Order order) {
         if (orderMap.containsKey(order.getId())) return "Already Exists";
         orderMap.put(order.getId(), order);
@@ -77,7 +85,17 @@ public class OrderRepository {
     }
 
     public String getLastDeliveryTimeByPartnerId(String partnerId) {
-        return "11:11";
+        int max = -1;
+        List<String> ordersList = deliveryPartnerArrayListHashMap.get(partnerId);
+        for (String orderId: ordersList) {
+            if(orderMap.get(orderId).getDeliveryTime() > max) max = orderMap.get(orderId).getDeliveryTime();
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(max / 60);
+        stringBuilder.append(':');
+        stringBuilder.append(max % 60);
+        String latestTime = stringBuilder.toString();
+        return latestTime;
     }
 
     public String deletePartnerById (String partnerId) {
