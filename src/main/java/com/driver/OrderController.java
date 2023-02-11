@@ -24,20 +24,20 @@ public class OrderController {
     @PostMapping("/add-order")
     public ResponseEntity<String> addOrder(@RequestBody Order order){
         String res = orderService.addOrder(order);
-        return new ResponseEntity<>(res, HttpStatus.CREATED);
+        return new ResponseEntity<>("New order added successfully", HttpStatus.CREATED);
     }
 
     @PostMapping("/add-partner/{partnerId}")
     public ResponseEntity<String> addPartner(@PathVariable String partnerId){
         String res = orderService.addPartner(partnerId);
-        return new ResponseEntity<>(res, HttpStatus.CREATED);
+        return new ResponseEntity<>("New delivery partner added successfully", HttpStatus.CREATED);
     }
 
     @PutMapping("/add-order-partner-pair")
     public ResponseEntity<String> addOrderPartnerPair(@RequestParam String orderId, @RequestParam String partnerId){
         //This is basically assigning that order to that partnerId
         String res = orderService.addOrderPartnerPair(orderId, partnerId);
-        return new ResponseEntity<>(res, HttpStatus.CREATED);
+        return new ResponseEntity<>("New order-partner pair added successfully", HttpStatus.CREATED);
     }
 
     @GetMapping("/get-order-by-id/{orderId}")
@@ -101,7 +101,7 @@ public class OrderController {
         //Delete the partnerId
         //And push all his assigned orders to unassigned orders.
         String res = orderService.deletePartnerById(partnerId);
-        return new ResponseEntity<>(partnerId + res, HttpStatus.CREATED);
+        return new ResponseEntity<>(partnerId + " removed successfully", HttpStatus.CREATED);
     }
 
     @DeleteMapping("/delete-order-by-id/{orderId}")
@@ -109,6 +109,6 @@ public class OrderController {
         //Delete an order and also
         // remove it from the assigned order of that partnerId
         String res = orderService.deleteOrderById(orderId);
-        return new ResponseEntity<>(orderId + res, HttpStatus.CREATED);
+        return new ResponseEntity<>(orderId + " removed successfully", HttpStatus.CREATED);
     }
 }
