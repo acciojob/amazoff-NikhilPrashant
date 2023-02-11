@@ -77,15 +77,7 @@ public class OrderRepository {
     }
 
     public String getLastDeliveryTimeByPartnerId(String partnerId) {
-        int max = -1;
-        List<String> ordersList = deliveryPartnerArrayListHashMap.get(partnerId);
-        for (String orderId: ordersList) {
-            if(orderMap.get(orderId).getDeliveryTime() > max) max = orderMap.get(orderId).getDeliveryTime();
-        }
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("11:11");
-        String latestTime = stringBuilder.toString();
-        return latestTime;
+        return "11:11";
     }
 
     public String deletePartnerById (String partnerId) {
