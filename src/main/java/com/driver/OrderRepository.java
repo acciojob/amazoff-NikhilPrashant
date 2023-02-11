@@ -12,7 +12,7 @@ public class OrderRepository {
     private HashMap<String, DeliveryPartner> partnerMap;
     private HashMap<String, String> orderDeliveryPartnerHashMap;
     private HashMap<String, List<String>> deliveryPartnerArrayListHashMap;
-
+    //Check
     public OrderRepository() {
         this.orderMap = new HashMap<>();
         this.partnerMap = new HashMap<>();
@@ -66,7 +66,7 @@ public class OrderRepository {
         return ordersList;
     }
 
-    public int getCountOfUnsignedOrders() {
+    public int getCountOfUnassignedOrders() {
         return orderMap.size() - orderDeliveryPartnerHashMap.size();
     }
 
