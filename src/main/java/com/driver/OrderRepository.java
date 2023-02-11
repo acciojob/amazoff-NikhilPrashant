@@ -31,7 +31,7 @@ public class OrderRepository {
     }
 
     public void addOrderPartnerPair(String orderId, String partnerId) {
-        if (orderMap.containsKey(orderId) && partnerMap.containsKey(partnerId)) {
+        if (orderMap.containsKey(orderId) && partnerMap.containsKey(partnerId) && !orderDeliveryPartnerHashMap.containsKey(orderId)) {
             orderDeliveryPartnerHashMap.put(orderId, partnerId);
             partnerMap.get(partnerId).setNumberOfOrders(partnerMap.get(partnerId).getNumberOfOrders() + 1);
             deliveryPartnerArrayListHashMap.get(partnerId).add(orderId);
@@ -81,17 +81,12 @@ public class OrderRepository {
     }
 
     public String getLastDeliveryTimeByPartnerId(String partnerId) {
-        int max = -1;
+        int max = 0;
         List<String> ordersList = deliveryPartnerArrayListHashMap.get(partnerId);
         for (String orderId: ordersList) {
             if(orderMap.get(orderId).getDeliveryTime() > max) max = orderMap.get(orderId).getDeliveryTime();
         }
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(max / 60);
-        stringBuilder.append(':');
-        stringBuilder.append(max % 60);
-        String latestTime = stringBuilder.toString();
-        return latestTime;
+        return (max / 60) + ":" + (max % 60);
     }
 
     public void deletePartnerById (String partnerId) {

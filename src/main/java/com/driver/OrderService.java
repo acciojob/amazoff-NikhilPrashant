@@ -10,15 +10,15 @@ public class OrderService {
 
     OrderRepository orderRepository = new OrderRepository();
 
-    public void addOrder (Order order) {
+    public void addOrder(Order order) {
         orderRepository.addOrder(order);
     }
 
-    public void addPartner (String partnerId) {
+    public void addPartner(String partnerId) {
         orderRepository.addPartner(partnerId);
     }
 
-    public void addOrderPartnerPair (String orderId, String partnerId) {
+    public void addOrderPartnerPair(String orderId, String partnerId) {
         orderRepository.addOrderPartnerPair(orderId, partnerId);
     }
 
@@ -27,6 +27,7 @@ public class OrderService {
     }
 
     public DeliveryPartner getPartnerById(String partnerId) {
+
         return orderRepository.getPartnerById(partnerId);
     }
 
@@ -54,11 +55,11 @@ public class OrderService {
         return orderRepository.getLastDeliveryTimeByPartnerId(partnerId);
     }
 
-    public void deletePartnerById (String partnerId) {
+    public void deletePartnerById(String partnerId) {
         orderRepository.deletePartnerById(partnerId);
     }
 
-    public void deleteOrderById (String orderId) {
+    public void deleteOrderById(String orderId) {
         orderRepository.deleteOrderById(orderId);
     }
 
