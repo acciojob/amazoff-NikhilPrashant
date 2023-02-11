@@ -30,7 +30,7 @@ public class OrderRepository {
         deliveryPartnerArrayListHashMap.put(partnerId, deliveryPartnerArrayListHashMap.getOrDefault(partnerId, new ArrayList<String>()));
     }
 
-    public void appOrderPartnerPair(String orderId, String partnerId) {
+    public void addOrderPartnerPair(String orderId, String partnerId) {
         if (orderMap.containsKey(orderId) && partnerMap.containsKey(partnerId)) {
             orderDeliveryPartnerHashMap.put(orderId, partnerId);
             partnerMap.get(partnerId).setNumberOfOrders(partnerMap.get(partnerId).getNumberOfOrders() + 1);
