@@ -83,20 +83,20 @@ public class OrderRepository {
             if(orderMap.get(orderId).getDeliveryTime() > max) max = orderMap.get(orderId).getDeliveryTime();
         }
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(max / 100);
+        stringBuilder.append(max / 60);
         stringBuilder.append(':');
-        stringBuilder.append(max % 100);
+        stringBuilder.append(max % 60);
         return stringBuilder.toString();
     }
 
     public String deletePartnerById (String partnerId) {
         partnerMap.remove(partnerId);
-        if (deliveryPartnerArrayListHashMap.containsKey(partnerId)) {
-            deliveryPartnerArrayListHashMap.remove(partnerId);
-            for (String order: orderDeliveryPartnerHashMap.keySet()) {
-                if (orderDeliveryPartnerHashMap.get(order) == partnerId) orderDeliveryPartnerHashMap.remove(order);
-            }
+        if (deliveryPartnerArrayListHashMap.containsKey(partnerId)) deliveryPartnerArrayListHashMap.remove(partnerId);
+        List<String> orderList = new ArrayList<>();
+        for (String order: orderDeliveryPartnerHashMap.keySet()) {
+            if (orderDeliveryPartnerHashMap.get(order) == partnerId) orderList.add(order);
         }
+        for (String order: orderList) orderDeliveryPartnerHashMap.remove(order);
         return " removed successfully";
     }
 
