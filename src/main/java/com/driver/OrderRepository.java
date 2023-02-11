@@ -86,7 +86,8 @@ public class OrderRepository {
         stringBuilder.append(max / 60);
         stringBuilder.append(':');
         stringBuilder.append(max % 60);
-        return stringBuilder.toString();
+        String latestTime = stringBuilder.toString();
+        return latestTime;
     }
 
     public String deletePartnerById (String partnerId) {
