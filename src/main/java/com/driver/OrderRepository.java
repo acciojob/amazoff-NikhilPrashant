@@ -1,117 +1,133 @@
 package com.driver;
 
+import org.apache.logging.log4j.message.Message;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class OrderRepository {
-    private HashMap<String, Order> orderMap;
-    private HashMap<String, DeliveryPartner> partnerMap;
-    private HashMap<String, String> orderDeliveryPartnerHashMap;
-    private HashMap<String, List<String>> deliveryPartnerArrayListHashMap;
+    private Map<String, Order> orderDatabase;
+    private Map<String, DeliveryPartner> partnerDatabase;
+    private Map<String, List<String>> partnerOrderMap;
+    private Set<String> orderNotAssigned;
+
 
     public OrderRepository() {
-        this.orderMap = new HashMap<>();
-        this.partnerMap = new HashMap<>();
-        this.orderDeliveryPartnerHashMap = new HashMap<>();
-        this.deliveryPartnerArrayListHashMap = new HashMap<>();
+        this.orderDatabase = new HashMap<>();
+        this.partnerDatabase = new HashMap<>();
+        this.partnerOrderMap = new HashMap<>();
+        this.orderNotAssigned = new HashSet<>();
     }
 
     public void addOrder(Order order) {
-        orderMap.put(order.getId(), order);;
+        orderDatabase.put(order.getId(), order);
+        orderNotAssigned.add(order.getId());
     }
 
     public void addPartner(String partnerId) {
-        DeliveryPartner deliveryPartner = new DeliveryPartner(partnerId);
-        partnerMap.put(partnerId, deliveryPartner);
-        deliveryPartnerArrayListHashMap.put(partnerId, deliveryPartnerArrayListHashMap.getOrDefault(partnerId, new ArrayList<String>()));
+        partnerDatabase.put(partnerId, new DeliveryPartner(partnerId));
     }
 
     public void addOrderPartnerPair(String orderId, String partnerId) {
-        if (orderMap.containsKey(orderId) && partnerMap.containsKey(partnerId) && !orderDeliveryPartnerHashMap.containsKey(orderId)) {
-            orderDeliveryPartnerHashMap.put(orderId, partnerId);
-            partnerMap.get(partnerId).setNumberOfOrders(partnerMap.get(partnerId).getNumberOfOrders() + 1);
-            deliveryPartnerArrayListHashMap.get(partnerId).add(orderId);
+        partnerDatabase.get(partnerId).setNumberOfOrders(partnerDatabase.get(partnerId).getNumberOfOrders() + 1);
+        if (partnerOrderMap.containsKey(partnerId)) {
+            List<String> orderList = partnerOrderMap.get(partnerId);
+            orderList.add(orderId);
+            orderNotAssigned.remove(orderId);
+            return;
         }
+        partnerOrderMap.put(partnerId, new ArrayList<>(Arrays.asList(orderId)));
+        orderNotAssigned.remove(orderId);
     }
 
     public Order getOrderById(String orderId) {
-        if (!orderMap.containsKey(orderId)) return null;
-        return orderMap.get(orderId);
+        return orderDatabase.get(orderId);
     }
 
     public DeliveryPartner getPartnerById(String partnerId) {
-        if (!partnerMap.containsKey(partnerId)) return null;
-        return partnerMap.get(partnerId);
+        return partnerDatabase.get(partnerId);
     }
 
     public int getOrderCountByPartnerId(String partnerId) {
-        if (!partnerMap.containsKey(partnerId)) return 0;
-        return partnerMap.get(partnerId).getNumberOfOrders();
+        return partnerOrderMap.get(partnerId).size();
     }
 
     public List<String> getOrdersByPartnerId(String partnerId) {
-        if (!partnerMap.containsKey(partnerId)) return null;
-        return deliveryPartnerArrayListHashMap.get(partnerId);
+        List<String> orderList = new ArrayList<>();
+        List<String> orderIdList = partnerOrderMap.get(partnerId);
+        for (String order : orderIdList) {
+            orderList.add(orderDatabase.get(order).getId());
+        }
+        return orderList;
     }
 
     public List<String> getAllOrders() {
-        List<String> ordersList = new ArrayList<>();
-        for (String orderId: orderMap.keySet()) {
-            ordersList.add(orderId);
+        Collection<Order> values = orderDatabase.values();
+        List<String> orderList = new ArrayList<>();
+        for (Order o : values) {
+            orderList.add(o.getId());
         }
-        return ordersList;
+        return orderList;
     }
 
-    public int getCountOfUnsignedOrders() {
-        return orderMap.size() - orderDeliveryPartnerHashMap.size();
+    public int getCountOfUnassignedOrders() {
+        return orderNotAssigned.size();
     }
 
     public int getOrdersLeftAfterGivenTimeByPartnerId(String time, String partnerId) {
+        int numericalTime = Integer.parseInt(time.substring(0, 2)) * 60 + Integer.parseInt(time.substring(3, 5));
         int count = 0;
-        List<String> ordersList = deliveryPartnerArrayListHashMap.get(partnerId);
-        int expectedTime = Integer.parseInt(time.substring(0,2)) * 60 + Integer.parseInt(time.substring(3));
-        for (String orderId: ordersList) {
-            if( orderMap.get(orderId).getDeliveryTime() > expectedTime) count++;
+        for (String orderId : partnerOrderMap.get(partnerId)) {
+            if (orderDatabase.get(orderId).getDeliveryTime() > numericalTime) {
+                count++;
+            }
         }
         return count;
     }
 
     public String getLastDeliveryTimeByPartnerId(String partnerId) {
-        int max = 0;
-        List<String> ordersList = deliveryPartnerArrayListHashMap.get(partnerId);
-        for (String orderId: ordersList) {
-            if(orderMap.get(orderId).getDeliveryTime() > max) max = orderMap.get(orderId).getDeliveryTime();
+        int latestTime = 0;
+        if (partnerOrderMap.containsKey(partnerId)) {
+            for (String currOrderId : partnerOrderMap.get(partnerId)) {
+                if (orderDatabase.get(currOrderId).getDeliveryTime() > latestTime) {
+                    latestTime = orderDatabase.get(currOrderId).getDeliveryTime();
+                }
+            }
         }
-        return (max / 60) + ":" + (max % 60);
+        int hours = latestTime / 60;
+        int minute = latestTime % 60;
+
+        String strhours = Integer.toString(hours);
+        if (strhours.length() == 1) {
+            strhours = "0" + strhours;
+        }
+
+        String minutes = Integer.toString(minute);
+        if (minutes.length() == 1) {
+            minutes = "0" + minutes;
+        }
+        return strhours + ":" + minutes;
+
     }
 
-    public void deletePartnerById (String partnerId) {
-        partnerMap.remove(partnerId);
-        if (deliveryPartnerArrayListHashMap.containsKey(partnerId)) {
-            deliveryPartnerArrayListHashMap.remove(partnerId);
-            List<String> orderList = new ArrayList<>();
-            for (String order: orderDeliveryPartnerHashMap.keySet()) {
-                if (orderDeliveryPartnerHashMap.get(order).equals(partnerId)) orderList.add(order);
+    public void deletePartnerById(String partnerId) {
+        if (!partnerOrderMap.isEmpty()) {
+            orderNotAssigned.addAll(partnerOrderMap.get(partnerId));
+        }
+        partnerOrderMap.remove(partnerId);
+        partnerDatabase.remove(partnerId);
+    }
+
+    public void deleteOrderById(String orderId) {
+        orderDatabase.remove(orderId);
+        if (orderNotAssigned.contains(orderId)) {
+            orderNotAssigned.remove(orderId);
+        } else {
+            for (List<String> listofOrderIds : partnerOrderMap.values()) {
+                listofOrderIds.remove(orderId);
             }
-            for (String order: orderList) orderDeliveryPartnerHashMap.remove(order);
         }
     }
 
-    public void deleteOrderById (String orderId) {
-        orderMap.remove(orderId);
-        if (orderDeliveryPartnerHashMap.containsKey(orderId)) {
-            String partnerId = orderDeliveryPartnerHashMap.get(orderId);
-            orderDeliveryPartnerHashMap.remove(orderId);
-            List<String> ordersList = deliveryPartnerArrayListHashMap.get(partnerId);
-            List<String> newOrdersList = new ArrayList<String>();
-            for (String order: ordersList) {
-                if (order != orderId) newOrdersList.add(order);
-            }
-            deliveryPartnerArrayListHashMap.put(partnerId, newOrdersList);
-        }
-    }
 }
