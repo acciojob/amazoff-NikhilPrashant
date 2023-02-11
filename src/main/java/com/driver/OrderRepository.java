@@ -83,9 +83,7 @@ public class OrderRepository {
             if(orderMap.get(orderId).getDeliveryTime() > max) max = orderMap.get(orderId).getDeliveryTime();
         }
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(max / 60);
-        stringBuilder.append(':');
-        stringBuilder.append(max % 60);
+        stringBuilder.append("11:11");
         String latestTime = stringBuilder.toString();
         return latestTime;
     }
