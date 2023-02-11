@@ -88,7 +88,15 @@ public class OrderRepository {
         for (String orderId: ordersList) {
             if(orderMap.get(orderId).getDeliveryTime() > max) max = orderMap.get(orderId).getDeliveryTime();
         }
-        return (max / 60) + ":" + (max % 60);
+        String hours = String.valueOf(max / 60);
+        if (hours.length() == 1) {
+            hours = "0" + hours;
+        }
+        String minutes = String.valueOf(max % 60);
+        if (minutes.length() == 1) {
+            minutes = "0" + minutes;
+        }
+        return hours + ":" + minutes;
     }
 
     public void deletePartnerById (String partnerId) {
