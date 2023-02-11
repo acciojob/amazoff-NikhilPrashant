@@ -20,26 +20,22 @@ public class OrderRepository {
         this.deliveryPartnerArrayListHashMap = new HashMap<>();
     }
 
-    public String addOrder(Order order) {
-        if (orderMap.containsKey(order.getId())) return "Already Exists";
-        orderMap.put(order.getId(), order);
-        return "New order added successfully";
+    public void addOrder(Order order) {
+        orderMap.put(order.getId(), order);;
     }
 
-    public String addPartner(String partnerId) {
+    public void addPartner(String partnerId) {
         DeliveryPartner deliveryPartner = new DeliveryPartner(partnerId);
         partnerMap.put(partnerId, deliveryPartner);
         deliveryPartnerArrayListHashMap.put(partnerId, deliveryPartnerArrayListHashMap.getOrDefault(partnerId, new ArrayList<String>()));
-        return "New delivery partner added successfully";
     }
 
-    public String appOrderPartnerPair(String orderId, String partnerId) {
+    public void appOrderPartnerPair(String orderId, String partnerId) {
         if (orderMap.containsKey(orderId) && partnerMap.containsKey(partnerId)) {
             orderDeliveryPartnerHashMap.put(orderId, partnerId);
             partnerMap.get(partnerId).setNumberOfOrders(partnerMap.get(partnerId).getNumberOfOrders() + 1);
             deliveryPartnerArrayListHashMap.get(partnerId).add(orderId);
         }
-        return "New order-partner pair added successfully";
     }
 
     public Order getOrderById(String orderId) {
@@ -98,7 +94,7 @@ public class OrderRepository {
         return latestTime;
     }
 
-    public String deletePartnerById (String partnerId) {
+    public void deletePartnerById (String partnerId) {
         partnerMap.remove(partnerId);
         if (deliveryPartnerArrayListHashMap.containsKey(partnerId)) {
             deliveryPartnerArrayListHashMap.remove(partnerId);
@@ -108,10 +104,9 @@ public class OrderRepository {
             }
             for (String order: orderList) orderDeliveryPartnerHashMap.remove(order);
         }
-        return " removed successfully";
     }
 
-    public String deleteOrderById (String orderId) {
+    public void deleteOrderById (String orderId) {
         orderMap.remove(orderId);
         if (orderDeliveryPartnerHashMap.containsKey(orderId)) {
             String partnerId = orderDeliveryPartnerHashMap.get(orderId);
@@ -123,6 +118,5 @@ public class OrderRepository {
             }
             deliveryPartnerArrayListHashMap.put(partnerId, newOrdersList);
         }
-        return " removed successfully";
     }
 }
