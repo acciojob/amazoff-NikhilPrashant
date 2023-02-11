@@ -77,7 +77,7 @@ public class OrderRepository {
     }
 
     public String getLastDeliveryTimeByPartnerId(String partnerId) {
-        int max = 0;
+        int max = -1;
         List<String> ordersList = deliveryPartnerArrayListHashMap.get(partnerId);
         for (String orderId: ordersList) {
             if(orderMap.get(orderId).getDeliveryTime() > max) max = orderMap.get(orderId).getDeliveryTime();
